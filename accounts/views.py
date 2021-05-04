@@ -49,14 +49,17 @@ def login(request):
         username = request.POST['username']
         password = request.POST['password']
 
-        # Check username exists
+        # authenticate user
         user = auth.authenticate(username=username, password=password)
         if user:
             auth.login(request, user)
             messages.success(request, 'You are now logged in')
-            return redirect('index')
+            return redirect('dashboard')
         else:
             messages.error(request, 'invalid credentials')
             return redirect('login')
     else:
         return render(request, 'accounts/login.html')
+
+def dashboard(request):
+    return render(request, 'accounts/dashboard.html')
