@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, auth
 
 def register(request):
     if request.method == 'POST':
@@ -35,7 +35,7 @@ def register(request):
                     user.save()
 
                     messages.success(request, 'registred successfully, you can login now')
-                    return redirect('register')
+                    return redirect('login')
 
         else:
             messages.error(request, 'Passwords don\'t match')
@@ -43,3 +43,20 @@ def register(request):
 
     else:
         return render(request, 'accounts/register.html')
+
+def login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        # Check username exists
+        user = auth.authenticate(username=username, password=password)
+        if user:
+            auth.login(request, user)
+            messages.success(request, 'You are now logged in')
+            return redirect('index')
+        else:
+            messages.error(request, 'invalid credentials')
+            return redirect('login')
+    else:
+        return render(request, 'accounts/login.html')
