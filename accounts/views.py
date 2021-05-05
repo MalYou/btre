@@ -53,7 +53,7 @@ def login(request):
         user = auth.authenticate(username=username, password=password)
         if user:
             auth.login(request, user)
-            # messages.success(request, 'You are now logged in')
+            messages.success(request, 'You are now logged in')
             return redirect('dashboard')
         else:
             messages.error(request, 'invalid credentials')
