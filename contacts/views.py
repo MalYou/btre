@@ -14,6 +14,15 @@ def contact(request):
         user_id = request.POST['user_id']
         realtor_email = request.POST['realtor_email']
 
+        # Check if user has already an inquery
+        if request.user.is_authenticated:
+            user_id = request.user.id
+            contact = Contact.objects.filter(listing_id=listing_id, user_id=user_id)
+
+            if contact:
+                messages.error(request, 'You have already made an inquery for this listing')
+                return redirect(f'/listings/{listing_id}')
+
         contact = Contact(
             listing_id=listing_id,
             listing=listing,
