@@ -1,5 +1,8 @@
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.core.mail import send_mail
+
+import os
 
 from .models import Contact
 
@@ -20,7 +23,7 @@ def contact(request):
             contact = Contact.objects.filter(listing_id=listing_id, user_id=user_id)
 
             if contact:
-                messages.error(request, 'You have already made an inquery for this listing')
+                messages.error(request, 'You have already made an inquiry for this listing')
                 return redirect(f'/listings/{listing_id}')
 
         contact = Contact(
@@ -36,5 +39,12 @@ def contact(request):
         contact.save()
         messages.success(request, 'Your request has been submitted, a \
                          realtor will get back to you soon')
+
+        send_mail(
+            subject='Property listing inquiry',
+            message=f'There has been an inquiry for {listing}. Sign into the admin panel for more informations',
+            from_email=os.environ.get('G_USER'),
+            recipient_list=[realtor_email],
+            fail_silently=True)
 
         return redirect(f'/listings/{listing_id}')
